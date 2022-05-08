@@ -1,9 +1,10 @@
 import React, { useCallback, useState } from "react";
-import { StyleSheet, View } from "react-native";
 
-import { Header } from "../components/Header";
-import { Task, TasksList } from "../components/TasksList";
-import { TodoInput } from "../components/TodoInput";
+import { Container } from "./styles";
+
+import { Header } from "../../components/Header";
+import { TodoInput } from "../../components/TodoInput";
+import { Task, TasksList } from "../../components/TaskList";
 
 export function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -34,7 +35,7 @@ export function Home() {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <Container>
       <Header tasksCounter={tasks.length} />
 
       <TodoInput addTask={handleAddTask} />
@@ -44,13 +45,6 @@ export function Home() {
         removeTask={handleRemoveTask}
         toggleTaskDone={handleToggleTaskDone}
       />
-    </View>
+    </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#EBEBEB",
-  },
-});
