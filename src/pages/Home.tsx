@@ -1,24 +1,37 @@
-import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useCallback, useState } from "react";
+import { StyleSheet, View } from "react-native";
 
-import { Header } from '../components/Header';
-import { Task, TasksList } from '../components/TasksList';
-import { TodoInput } from '../components/TodoInput';
+import { Header } from "../components/Header";
+import { Task, TasksList } from "../components/TasksList";
+import { TodoInput } from "../components/TodoInput";
 
 export function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  function handleAddTask(newTaskTitle: string) {
-    //TODO - add new task
-  }
+  const handleAddTask = useCallback((newTaskTitle: string) => {
+    setTasks((prevTasks) => [
+      ...prevTasks,
+      { id: new Date().getUTCMilliseconds(), title: newTaskTitle, done: false },
+    ]);
+  }, []);
 
-  function handleToggleTaskDone(id: number) {
-    //TODO - toggle task done if exists
-  }
+  const handleToggleTaskDone = useCallback((id: number) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((currentTask) => {
+        if (currentTask.id === id) {
+          currentTask.done = true;
+        }
 
-  function handleRemoveTask(id: number) {
-    //TODO - remove task from state
-  }
+        return currentTask;
+      })
+    );
+  }, []);
+
+  const handleRemoveTask = useCallback((id: number) => {
+    setTasks((prevTasks) =>
+      prevTasks.filter((currentTask) => currentTask.id !== id)
+    );
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -26,18 +39,18 @@ export function Home() {
 
       <TodoInput addTask={handleAddTask} />
 
-      <TasksList 
-        tasks={tasks} 
+      <TasksList
+        tasks={tasks}
+        removeTask={handleRemoveTask}
         toggleTaskDone={handleToggleTaskDone}
-        removeTask={handleRemoveTask} 
       />
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#EBEBEB'
-  }
-})
+    backgroundColor: "#EBEBEB",
+  },
+});
