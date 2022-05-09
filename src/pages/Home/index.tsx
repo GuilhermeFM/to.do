@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from "react";
+import { Alert } from "react-native";
 
 import { Container } from "./styles";
 
@@ -9,18 +10,66 @@ import { Task, TasksList } from "../../components/TaskList";
 export function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  const handleAddTask = useCallback((newTaskTitle: string) => {
-    setTasks((prevTasks) => [
-      ...prevTasks,
-      { id: new Date().getUTCMilliseconds(), title: newTaskTitle, done: false },
-    ]);
+  const onAdd = useCallback(
+    (newTaskTitle: string) => {
+      const exists = tasks.find(
+        (currentTask) => currentTask.title === newTaskTitle
+      );
+
+      if (exists) {
+        Alert.alert(
+          "Task já cadastrada",
+          "Você não pode cadastrar uma task com o mesmo nome."
+        );
+
+        return;
+      }
+
+      setTasks((prevTasks) => [
+        ...prevTasks,
+        {
+          id: new Date().getUTCMilliseconds(),
+          title: newTaskTitle,
+          done: false,
+        },
+      ]);
+    },
+    [tasks]
+  );
+
+  const onEdit = useCallback((id: number, newTaskTitle: string) => {
+    setTasks((prevTask) =>
+      prevTask.map((currentTask) => {
+        if (currentTask.id === id) currentTask.title = newTaskTitle;
+        return currentTask;
+      })
+    );
   }, []);
 
-  const handleToggleTaskDone = useCallback((id: number) => {
+  const onRemove = useCallback((id: number) => {
+    Alert.alert(
+      "Remover item",
+      "Tem certeza que você deseja remover esse item?",
+      [
+        {
+          text: "Sim",
+          style: "cancel",
+          onPress: () => {
+            setTasks((prevTasks) =>
+              prevTasks.filter((currentTask) => currentTask.id !== id)
+            );
+          },
+        },
+        { text: "Não" },
+      ]
+    );
+  }, []);
+
+  const onDone = useCallback((id: number) => {
     setTasks((prevTasks) =>
       prevTasks.map((currentTask) => {
         if (currentTask.id === id) {
-          currentTask.done = true;
+          currentTask.done = !currentTask.done;
         }
 
         return currentTask;
@@ -28,22 +77,17 @@ export function Home() {
     );
   }, []);
 
-  const handleRemoveTask = useCallback((id: number) => {
-    setTasks((prevTasks) =>
-      prevTasks.filter((currentTask) => currentTask.id !== id)
-    );
-  }, []);
-
   return (
     <Container>
       <Header tasksCounter={tasks.length} />
 
-      <TodoInput addTask={handleAddTask} />
+      <TodoInput addTask={onAdd} />
 
       <TasksList
         tasks={tasks}
-        removeTask={handleRemoveTask}
-        toggleTaskDone={handleToggleTaskDone}
+        onDone={onDone}
+        onRemove={onRemove}
+        onEdit={onEdit}
       />
     </Container>
   );

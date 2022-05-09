@@ -33,7 +33,7 @@ export const Input = styled.TextInput.attrs({
 `;
 
 export const AddButton = styled(TouchableOpacity)`
-  height: 56;
+  height: 56px;
 
   display: flex;
   justify-content: center;
@@ -41,8 +41,8 @@ export const AddButton = styled(TouchableOpacity)`
 
   background-color: #fff;
 
-  padding-left: 12;
-  padding-right: 12;
+  padding-left: 12px;
+  padding-right: 12px;
 
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;

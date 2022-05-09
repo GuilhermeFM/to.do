@@ -1,22 +1,14 @@
 import React from "react";
-import { View, FlatList, Image } from "react-native";
-import Icon from "react-native-vector-icons/Feather";
+import { FlatList } from "react-native";
 
-import {
-  TaskText,
-  TaskMarker,
-  TaskItemOdd,
-  TaskItemEven,
-  TaskButtonDone,
-  TaskButtonRemove,
-} from "./styles";
-
-import trashIcon from "../../assets/icons/trash/trash.png";
+import { TaskListItem } from "../TaskListItem";
+import { TaskItemOdd, TaskItemEven } from "./styles";
 
 interface TasksListProps {
   tasks: Task[];
-  toggleTaskDone: (id: number) => void;
-  removeTask: (id: number) => void;
+  onDone: (id: number) => void;
+  onRemove: (id: number) => void;
+  onEdit: (id: number, newTaskTitle: string) => void;
 }
 
 export interface Task {
@@ -25,38 +17,7 @@ export interface Task {
   done: boolean;
 }
 
-export function TasksList({
-  tasks,
-  removeTask,
-  toggleTaskDone,
-}: TasksListProps) {
-  const renderItem = (index: number, item: Task) => {
-    return (
-      <>
-        <View>
-          <TaskButtonDone
-            activeOpacity={0.7}
-            testID={`button-${index}`}
-            onPress={() => toggleTaskDone(item.id)}
-          >
-            <TaskMarker done={item.done} testID={`marker-${index}`}>
-              {item.done && <Icon name="check" size={12} color="#fff" />}
-            </TaskMarker>
-
-            <TaskText done={item.done}>{item.title}</TaskText>
-          </TaskButtonDone>
-        </View>
-
-        <TaskButtonRemove
-          testID={`trash-${index}`}
-          onPress={() => removeTask(item.id)}
-        >
-          <Image source={trashIcon} />
-        </TaskButtonRemove>
-      </>
-    );
-  };
-
+export function TasksList({ tasks, onDone, onRemove, onEdit }: TasksListProps) {
   return (
     <FlatList
       data={tasks}
@@ -66,9 +27,25 @@ export function TasksList({
       keyExtractor={(item) => String(item.id)}
       renderItem={({ index, item }) =>
         index % 2 === 0 ? (
-          <TaskItemEven>{renderItem(index, item)}</TaskItemEven>
+          <TaskItemEven>
+            <TaskListItem
+              index={index}
+              item={item}
+              onDone={onDone}
+              onRemove={onRemove}
+              onEdit={onEdit}
+            />
+          </TaskItemEven>
         ) : (
-          <TaskItemOdd>{renderItem(index, item)}</TaskItemOdd>
+          <TaskItemOdd>
+            <TaskListItem
+              index={index}
+              item={item}
+              onDone={onDone}
+              onRemove={onRemove}
+              onEdit={onEdit}
+            />
+          </TaskItemOdd>
         )
       }
     />
